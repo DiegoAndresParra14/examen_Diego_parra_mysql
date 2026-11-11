@@ -248,15 +248,9 @@ CREATE TABLE reports (
 );
 
 
--- EL trigger se ejecuta despues de insertar un dato en la tabla user_memberships y calcula automaticamente la fecha de vencimiento de esta misma en un transcurso de 30 dias a partir de la feha inicial
--- y la guarda en el mismo registro
--- Usamos date_add ya que debemos de agregar 30 dias a partir de la fecha iniciar y guardarla en la nueva end_date
-
+-- Calcula el vencimiento antes de guardar la fila, sin actualizar la misma tabla.
+-- Se conserva la regla del ejercicio: 30 días desde la fecha inicial.
 CREATE TRIGGER trg_membership_end_date_calculate
-AFTER INSERT ON user_memberships
+BEFORE INSERT ON user_memberships
 FOR EACH ROW
-UPDATE user_memberships
-SET NEW.end_date =
-	DATE_ADD(NEW.start_date, INTERVAL 30 DAY);
-
-
+SET NEW.end_date = DATE_ADD(NEW.start_date, INTERVAL 30 DAY);
