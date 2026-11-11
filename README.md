@@ -24,12 +24,16 @@ Abre `script.sql` en MySQL Workbench o un cliente compatible con MySQL y recorre
 
 **Usa una instancia de práctica:** el script comienza con `DROP DATABASE IF EXISTS CoworkingyOficinas`, por lo que elimina una base existente con ese nombre antes de recrearla.
 
-## Estado del ejercicio
+## Trigger de vencimiento
 
-El modelo incluye un intento de trigger para calcular el vencimiento de las membresías. Ese bloque requiere corrección antes de ejecutar el script completo: usa `AFTER INSERT` e intenta modificar `NEW.end_date` mediante un `UPDATE` sobre la misma tabla.
+El trigger se ejecuta BEFORE INSERT y asigna NEW.end_date con SET. Conserva la regla del ejercicio: 30 días desde start_date. No intenta actualizar la misma tabla desde un trigger AFTER INSERT.
 
-Una siguiente mejora es calcular el valor en un trigger `BEFORE INSERT`, revisar la duración según el tipo de membresía y añadir datos de ejemplo y consultas de validación.
+## Verificación reproducible
 
-Este repositorio presenta el esquema académico actual; no constituye todavía un sistema completo de reservas ni una migración lista para producción.
+En una base de práctica, ejecuta primero script.sql y luego tests/membership_expiry.sql. La prueba usa registros ficticios dentro de una transacción, verifica el cálculo con una aserción SQL y revierte los datos de prueba. La preparación del esquema sigue siendo destructiva para la base CoworkingyOficinas.
 
-[Volver al perfil](https://github.com/DiegoAndresParra14)
+La revisión local comprobó la definición del trigger frente a la [documentación de MySQL](https://dev.mysql.com/doc/refman/8.0/en/trigger-syntax.html). El esquema completo y la prueba de vencimiento se ejecutaron correctamente en una instancia temporal aislada de MySQL 8.4.13. Esa comprobación no sustituye validar las reglas de negocio de un sistema en producción.
+
+## Alcance
+
+No incluye API, aplicación de reservas, datos iniciales ni consultas operativas completas. Las reglas entre reservas, pagos y estados deben ampliarse antes de un uso real.
